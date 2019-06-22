@@ -1,44 +1,23 @@
 <template lang="pug">
   div
-    app-order-list-item(
-      v-for="item, i in orderList"
-      v-bind:key="i"
-      v-bind:index="i"
-      v-bind:orderItem="item"
-      v-on:handle-input="handleInput"
+    div(
+      v-for="item, i in itemsCount"
     )
-    button(
-      v-on:click="handleCopy"
-      name="コピー"
-    ) コピー
+      slot(
+        name="item"
+        v-bind:itemId="i"
+      ) item
+    slot(
+      name="copy"
+    ) copy
 </template>
 <script>
-import AppOrderListItem from './AppOrderListItem'
 export default {
   name: 'AppOrderList',
-  components: {
-    AppOrderListItem
-  },
   props: {
-    index: {
+    itemsCount: {
       type: Number,
       required: true
-    },
-    orderList: {
-      type: Array,
-      required: true
-    }
-  },
-  methods: {
-    handleInput(payload) {
-      const {index, result} = payload
-      this.$emit('handle-input', {
-        index: this.index,
-        result:this.orderList.map((v, i) => i === index ? result: v)
-      })
-    },
-    handleCopy() {
-      this.$emit('handle-copy', this.orderList)
     }
   }
 }

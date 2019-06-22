@@ -3,7 +3,7 @@ app-order-list-item-layout
   input.input(
     type="text"
     slot="left"
-    v-model="itemName"
+    v-model="localItemName"
   ) 
   span.operator(
     slot="center"
@@ -11,7 +11,7 @@ app-order-list-item-layout
   input.input(
     type="text"
     slot="right"
-    v-model="itemPrice"
+    v-model="localItemPrice"
   )
 </template>
 <script>
@@ -19,39 +19,45 @@ import AppOrderListItemLayout from './AppOrderListItemLayout'
 export default {
   name: 'AppOrderListItem',
   components: { AppOrderListItemLayout },
-  model: {
-    prop: 'propData',
-    event: 'input'
-  },
   props: {
-    orderItem: {
-      type: Object,
+    itemName: {
+      type: String,
       required: true
     },
-    index: {
-      type: Number,
+    itemPrice: {
+      type: String,
       required: true
-    }
-  },
-  data() {
-    return {
-      itemName: this.orderItem.itemName,
-      itemPrice: this.orderItem.itemPrice
     }
   },
   computed: {
-    localOrderItem() {
-      const itemName = this.itemName
-      const itemPrice = this.itemPrice
-      return { itemName, itemPrice }
+    localItemName: {
+      get() {
+        return this.itemName
+      },
+      set(val) {
+        const payload = {
+          itemName: val,
+          itemPrice: this.itemPrice
+        }
+        this.updateItem(payload)
+      }
+    },
+    localItemPrice: {
+      get() {
+        return this.itemPrice
+      },
+      set(val) {
+        const payload = {
+          itemName: this.itemName,
+          itemPrice: val
+        }
+        this.updateItem(payload)
+      }
     }
   },
-  watch: {
-    localOrderItem() {
-      this.$emit('handle-input', {
-        index: this.index,
-        result: this.localOrderItem
-      })
+  methods: {
+    updateItem(payload) {
+      this.$emit('updated-order-item', payload)
     }
   }
 }

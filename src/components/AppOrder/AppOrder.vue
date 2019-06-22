@@ -1,24 +1,32 @@
 <template lang="pug">
 div#app
   app-order-list(
-    v-for="item, i in localOrderInfo"
-    v-bind:key="i"
-    v-bind:index="i"
-    v-bind:orderList="item"
-    v-on:handle-input="handleInput"
-    v-on:handle-copy="handleCopy"
+    v-for="orderList, listId in localOrderInfo"
+    v-bind:key="listId"
+    v-bind:itemsCount="orderList.length"
   )
+    app-order-list-item(
+      slot="item"
+      slot-scope="{ itemId }"
+      v-bind="{...orderList[itemId]}"
+      v-on:updated-order-item="updateOrderItem($event,{ listId, itemId})"
+    )
+    button(
+      slot="copy"
+      v-on:click="copyOrderList(listId)"
+    ) コピー
   button(
-    v-on:click="addList"
+    v-on:click="addOrderList"
   ) 新規追加
 </template>
 <script>
 import Model from './Model'
 import AppOrderList from './partial/AppOrderList'
+import AppOrderListItem from './partial/AppOrderListItem'
 
 export default {
   name: 'AppOrder',
-  components: { AppOrderList },
+  components: { AppOrderList, AppOrderListItem },
   props: {
     orderInfo: {
       type: Array,
@@ -31,14 +39,15 @@ export default {
     }
   },
   methods: {
-    handleInput(payload) {
-      const { index, result } = payload
-      this.localOrderInfo.splice(index, 1, result)
+    updateOrderItem(payload, ids) {
+      const { listId, itemId } = ids
+      this.localOrderInfo[listId].splice(itemId, 1, payload)
     },
-    handleCopy(payload) {
-      this.localOrderInfo = [...this.localOrderInfo, payload]
+    copyOrderList(listId) {
+      const copiedList = [...this.localOrderInfo[listId]]
+      this.localOrderInfo = [...this.localOrderInfo, copiedList]
     },
-    addList() {
+    addOrderList() {
       const newList = [...Array(3)].map(() => {
         return Model
       })
