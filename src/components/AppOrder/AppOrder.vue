@@ -3,7 +3,7 @@ div#app
   app-order-list(
     v-for="orderList, listId in localOrderInfo"
     v-bind:key="listId"
-    v-bind:itemsCount="orderList.length"
+    v-bind:items-count="orderList.length"
   )
     app-order-list-item(
       slot="item"
